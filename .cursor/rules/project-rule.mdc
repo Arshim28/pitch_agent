@@ -1,0 +1,232 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Ultravox Presentation Dashboard - Cursor Rules
+
+## Project Overview
+Building a voice-controlled presentation dashboard using React + Ultravox SDK. Users can navigate slides using voice commands like "next slide", "go to slide 3", etc. Focus is on working demo, not production.
+
+## Technology Stack
+- Frontend: React 18 (JavaScript, not TypeScript for simplicity)
+- Styling: Tailwind CSS
+- Voice AI: Ultravox SDK (ultravox-client package)
+- Icons: Lucide React
+- No backend needed (direct API calls for demo)
+
+## Key Concepts
+
+### Ultravox Client Tools
+- Client tools run in the browser and update UI directly
+- Register tools with `session.registerClientTool(name, function)`
+- Tools are defined with `temporaryTool` schema when creating calls
+- Use custom events to communicate between tools and React components
+
+### Voice Command Pattern
+```javascript
+// 1. Define tool for Ultravox
+{
+  temporaryTool: {
+    modelToolName: "nextSlide",
+    description: "Move to next slide",
+    client: {}
+  }
+}
+
+// 2. Register implementation
+client.registerTool('nextSlide', () => {
+  window.dispatchEvent(new CustomEvent('slideNavigation', { 
+    detail: { action: 'next' } 
+  }));
+  return "Moving to next slide";
+});
+
+// 3. Listen in React
+useEffect(() => {
+  const handleNav = (event) => {
+    if (event.detail.action === 'next') {
+      setCurrentSlide(prev => prev + 1);
+    }
+  };
+  window.addEventListener('slideNavigation', handleNav);
+  return () => window.removeEventListener('slideNavigation', handleNav);
+}, []);
+```
+
+## File Structure
+```
+src/
+├── App.js                 // Main component with slides + voice controls
+├── ultravoxClient.js      // Ultravox SDK wrapper class
+├── slides.js              // Sample presentation data + system prompt
+└── index.css              // Tailwind imports + custom styles
+```
+
+## Coding Guidelines
+
+### React Patterns
+- Use functional components with hooks
+- Keep state simple with useState
+- Use useEffect for event listeners and cleanup
+- Avoid complex state management - just basic React state
+
+### Ultravox Integration
+- Always register client tools BEFORE joining call
+- Use descriptive tool names that match voice commands
+- Return simple strings from tool functions
+- Handle errors gracefully with try/catch
+
+### Event Handling
+- Use CustomEvent for tool → React communication
+- Always clean up event listeners in useEffect return
+- Use detail property to pass data with events
+
+### Voice Commands
+- Keep tool descriptions clear and natural
+- Support variations: "next", "next slide", "move forward"
+- Handle edge cases: invalid slide numbers, out of bounds
+- Provide feedback through return messages
+
+## Code Style
+
+### Naming Conventions
+- Components: PascalCase (App, SlideDisplay)
+- Functions: camelCase (startCall, registerTools)
+- Constants: UPPER_CASE (SLIDES, SYSTEM_PROMPT)
+- Events: camelCase (slideNavigation, getSlideInfo)
+
+### Error Handling
+```javascript
+// Always wrap API calls
+try {
+  const result = await client.createCall(prompt, tools);
+} catch (error) {
+  console.error('Call failed:', error);
+  // Show user-friendly message
+  alert('Failed to start call. Check your API key.');
+}
+```
+
+### Logging
+- Use console.log for debugging voice commands
+- Prefix logs: "🎯 Client Tool:", "🚀 Creating call:"
+- Log tool registrations and event dispatching
+
+## Common Patterns
+
+### Tool Registration Template
+```javascript
+client.registerTool('toolName', (params) => {
+  console.log('🎯 Client Tool: toolName called', params);
+  
+  // Dispatch event to React
+  window.dispatchEvent(new CustomEvent('eventName', { 
+    detail: { ...eventData } 
+  }));
+  
+  return "Tool executed successfully";
+});
+```
+
+### API Call Pattern
+```javascript
+const response = await fetch('https://api.ultravox.ai/api/calls', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': API_KEY,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    systemPrompt,
+    model: 'fixie-ai/ultravox',
+    voice: 'Mark',
+    selectedTools: tools
+  }),
+});
+```
+
+## Ultravox Specifics
+
+### System Prompt Guidelines
+- Clearly explain available tools and when to use them
+- Give examples of voice commands
+- Keep instructions concise but complete
+- Include tool descriptions that match actual behavior
+
+### Tool Definitions
+- Use `temporaryTool` for demos (simpler than durable tools)
+- Set `client: {}` for browser-based tools
+- Use `PARAMETER_LOCATION_BODY` for dynamic parameters
+- Make descriptions natural language that users might say
+
+### Common Issues
+- API key must be valid and not expired
+- Tools must be registered before joining call
+- Browser needs microphone permissions
+- Chrome has best WebRTC support
+- Check console for tool execution logs
+
+## Dependencies
+
+### Required Packages
+```json
+{
+  "ultravox-client": "latest",
+  "lucide-react": "^0.263.1",
+  "tailwindcss": "^3.3.6"
+}
+```
+
+### API Key Setup
+- Get free key from https://app.ultravox.ai
+- 30 free minutes for testing
+- Replace placeholder in ultravoxClient.js:
+  `const API_KEY = 'YOUR_ULTRAVOX_API_KEY_HERE';`
+
+## Debugging Checklist
+
+### Voice Commands Not Working
+1. Check browser console for errors
+2. Verify API key is correct
+3. Confirm microphone permissions granted
+4. Test in Chrome browser
+5. Check tool registration logs
+6. Verify event listeners are attached
+
+### Tools Not Triggering UI Updates
+1. Check CustomEvent dispatching in tools
+2. Verify event listeners in React components
+3. Test manual button clicks first
+4. Check state updates in React DevTools
+
+### API Errors
+1. Verify API key format and validity
+2. Check network tab for failed requests
+3. Confirm request body structure
+4. Test with simpler tool definitions first
+
+## Quick Start Commands
+```bash
+npx create-react-app ultravox-demo
+cd ultravox-demo
+npm install ultravox-client lucide-react
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+# Copy code files and replace API key
+npm start
+```
+
+## Testing Voice Commands
+- "Next slide" → nextSlide tool
+- "Previous slide" → previousSlide tool  
+- "Go to slide 3" → gotoSlide tool with parameter
+- "What's this slide about?" → getSlideInfo tool
+
+## Focus Areas
+1. Get basic slide navigation working first
+2. Add voice commands second
+3. Polish UI third
+4. Handle edge cases last
+
+Keep it simple - the goal is a working demo, not production code.
