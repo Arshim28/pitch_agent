@@ -3,7 +3,6 @@ import { Play, Pause, SkipForward, SkipBack } from 'lucide-react';
 import { UltravoxClient } from './ultravoxClient';
 import { SLIDES, SYSTEM_PROMPT, PRESENTATION_CONFIG } from './slides';
 
-// Tool definitions for Ultravox, matching the reverted slides.js
 const TOOLS = [
   {
     temporaryTool: {
@@ -85,7 +84,6 @@ function App() {
     }
   }, [client]);
 
-  // Event handler for navigation
   useEffect(() => {
     const handleNavigation = (event) => {
       const { action, slideNumber } = event.detail;
@@ -104,38 +102,66 @@ function App() {
     return () => window.removeEventListener('slideNavigation', handleNavigation);
   }, []);
 
-  // Tool registrations
   useEffect(() => {
     if (!client) return;
 
+    console.log('🔧 Registering all client tools...');
+
     client.registerTool('nextSlide', () => {
+      console.log('🎯 nextSlide tool called');
       window.dispatchEvent(new CustomEvent('slideNavigation', { detail: { action: 'next' } }));
       return "Moving to the next slide.";
     });
 
     client.registerTool('previousSlide', () => {
+      console.log('🎯 previousSlide tool called');
       window.dispatchEvent(new CustomEvent('slideNavigation', { detail: { action: 'previous' } }));
       return "Going back to the previous slide.";
     });
 
     client.registerTool('gotoSlide', (params) => {
+      console.log('🎯 gotoSlide tool called with params:', params);
       const slideNumber = parseInt(params.slideNumber);
       window.dispatchEvent(new CustomEvent('slideNavigation', { detail: { action: 'goto', slideNumber } }));
       return `Jumping to slide ${slideNumber}.`;
     });
 
     client.registerTool('getSlideInfo', () => {
-      return SLIDES[currentSlide].takeaway;
+      console.log('🎯 getSlideInfo tool called for slide:', currentSlide + 1);
+      const takeaway = SLIDES[currentSlide].takeaway;
+      console.log('🎯 Returning takeaway:', takeaway);
+      return takeaway;
     });
 
     client.registerTool('getContent', (params) => {
-      const slide = SLIDES.find(s => s.id === parseInt(params.slideId));
-      return slide ? slide.content : "Could not find note.";
+      console.log('🎯 getContent called with params:', params);
+      console.log('🎯 Available slides:', SLIDES.map(s => ({id: s.id, title: s.title})));
+      
+      const slideId = parseInt(params.slideId);
+      const slide = SLIDES.find(s => s.id === slideId);
+      
+      console.log('🎯 Looking for slide ID:', slideId);
+      console.log('🎯 Found slide:', slide ? slide.title : 'NOT FOUND');
+      
+      if (slide) {
+        console.log('🎯 Returning content length:', slide.content.length);
+        console.log('🎯 Content preview:', slide.content.substring(0, 100) + '...');
+        return slide.content;
+      } else {
+        console.log('❌ Could not find slide with ID:', slideId);
+        return "Could not find note.";
+      }
     });
 
-    client.registerTool('hangUpCall', endCall);
+    client.registerTool('hangUpCall', () => {
+      console.log('🎯 hangUpCall tool called');
+      endCall();
+      return "Ending the call and presentation session.";
+    });
 
-  }, [client, endCall, currentSlide]); // currentSlide dependency needed for getSlideInfo
+    console.log('✅ All tools registered successfully');
+
+  }, [client, endCall, currentSlide]);
 
   const startCall = async () => {
     if (!client) {
@@ -151,9 +177,11 @@ function App() {
     };
 
     try {
+      console.log('🚀 Starting call with system prompt preview:', SYSTEM_PROMPT.substring(0, 200) + '...');
       const { joinUrl } = await client.createCall(SYSTEM_PROMPT, TOOLS, callOptions);
       await client.joinCall(joinUrl);
       setIsCallActive(true);
+      console.log('✅ Call started successfully');
     } catch (error) {
       console.error('Failed to start call:', error);
       alert('Failed to start call. Check console for errors.');
@@ -270,6 +298,7 @@ function App() {
             <p>"Previous slide"</p>
             <p>"Go to slide 2"</p>
             <p>"What's this slide about?" (gives takeaway)</p>
+            <p>"Get content for slide 1" (debugging)</p>
           </div>
         </div>
       </div>
