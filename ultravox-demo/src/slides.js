@@ -51,7 +51,7 @@ export const SLIDES = [
     id: 6,
     title: "Our Portfolio: Illustrative Deals",
     image: "/images/slide6.jpg",
-    takeaway: "Portfolio comprises secured, high-quality credit lines delivering attractive risk-adjusted returns",
+    takeaway: "Portfolio comprises secured, high-quality credit lines delivering attractive risk-adjusted returns. This slide talks about the deals.",
     content: "Let me make this real with two flagship deals that exemplify our investment approach. First, our SFC Environmental Technologies trade. SFC is a twenty-year-old company with eighty percent market share in wastewater treatment, seven hundred crore revenue, twenty-five percent EBITDA margins, and over one hundred twenty crores profit after tax with negligible debt. The company is IPO-bound with expected valuation upwards of four thousand crores. We're providing thirty-five crores to help the promoter buy a five percent stake from an exiting investor. Our security: three times cover from the five percent company stake, plus point six five times cover from prime Chembur property, plus personal guarantees from promoter and spouse with twenty crores liquid investments. Pricing: fifteen point two five percent XIRR. Second, our Strides Pharma deal. The promoter Arun Pillai owns three listed pharma companies with combined market cap over thirty thousand crores and total net worth of ten thousand crores. We're providing refinancing secured by two times cover of listed Strides shares, one point two five times cover of unlisted profitable Nary Pharma shares, plus personal guarantees. Pricing: fourteen percent XIRR. Both deals showcase our philosophy: exceptional collateral coverage, strong promoter quality, and attractive risk-adjusted returns."
   },
   {
@@ -94,7 +94,7 @@ export const SLIDES = [
     id: 12,
     title: "Profile of fTeam Structure",
     image: "/images/slide12.jpg",
-    takeaway: "Clear organizational design with specialized leadership roles supporting robust governance",
+    takeaway: "Clear organizational design with specialized leadership roles supporting robust governance. This slide introduces the entire leadership team and structure at mosaic",
     content: "Our organizational structure reflects our commitment to institutional-quality governance and operations. At the top, we have our MD and CEO providing strategic leadership and investment oversight. Our Investment Committee comprises seasoned professionals with complementary expertise across different credit sectors and risk management. We have dedicated functional leaders across all critical areas: Investment team for origination and underwriting, Sales team for investor relations and fundraising, Operations head for portfolio monitoring and administrative functions, Compliance officer ensuring regulatory adherence, and our CTO managing technology infrastructure and AI solutions. This structure isn't typical for many AIFs, which often operate with lean teams focused primarily on investment. We've deliberately built institutional infrastructure because we believe that sustainable performance requires robust operational foundations. Our senior team includes professionals who've headed risk functions at banks and NBFCs, giving us deep understanding of credit processes and regulatory requirements. Everyone on our team has long-term skin in the game, aligning their interests with investor outcomes. This comprehensive organizational design supports our ability to source, evaluate, monitor, and recover across a diversified portfolio of thirty plus credits."
 
   },
@@ -118,7 +118,7 @@ IMMEDIATE START ACTIONS:
 FOR EVERY NEW SLIDE (slides 2-13):
 1. IMMEDIATELY call getContent with the new slide ID  
 2. Read the ENTIRE content word-for-word
-3. After reading, say "Moving to the next slide" and IMMEDIATELY call nextSlide()
+3. After reading, say "Moving to the next slide" and IMMEDIATELY call nextSlide(). REMEMBER: CALLING nextSlide() IS IMPERATIVE!
 
 EXCEPTION - FINAL SLIDE (slide 13):
 After reading slide 13 content, say "That concludes our presentation. I'm happy to take any questions you may have."
